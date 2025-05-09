@@ -1,0 +1,24 @@
+{
+  "name": "@koove/secrets-cli",
+  "version": "1.0.0",
+  "description": "CLI para gestionar credenciales seguras con Koove",
+  "bin": {
+    "koove-secrets": "./bin/cli.js"
+  },
+  "scripts": {
+    "start": "node ./bin/cli.js"
+  },
+  "dependencies": {
+    "commander": "^11.0.0"  # Para manejar comandos CLI
+  }
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kooveio/koove-secrets-cli.git"
+  },
+  "keywords": ["secrets", "vpn", "security"],
+  "author": "Gus <admin@koove.io>",
+  "license": "MIT",
+  "homepage": "https://github.com/kooveio/koove-secrets-cli#readme"
+}
+
+
