@@ -9,16 +9,24 @@
     "start": "node ./bin/cli.js"
   },
   "dependencies": {
-    "commander": "^11.0.0"  # Para manejar comandos CLI
+    "@koove/crypto": "file:../koove-crypto",
+    "axios": "^1.9.0",
+    "commander": "^11.1.0",
+    "dotenv": "^16.5.0"
+  },
+  "engines": {
+    "node": ">=22"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/kooveio/koove-secrets-cli.git"
   },
-  "keywords": ["secrets", "vpn", "security"],
+  "keywords": [
+    "secrets",
+    "vpn",
+    "security"
+  ],
   "author": "Gus <admin@koove.io>",
   "license": "MIT",
   "homepage": "https://github.com/kooveio/koove-secrets-cli#readme"
 }
-
-
