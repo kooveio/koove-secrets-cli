@@ -227,6 +227,7 @@ program
   .command('set <key> <value>')
   .description('Cifra localmente y guarda una credencial (zero-knowledge)')
   .option('--env <env>', 'Entorno (dev/prod/staging)', 'dev')
+  .option('--canary', 'marca el secreto como señuelo: cualquier lectura dirigida dispara alerta de brecha', false)
   .action(async (key, value, options) => {
     try {
       const api = apiOrExit();
@@ -245,10 +246,13 @@ program
       }
 
       const envelope = encryptSecret(recipients, value);
-      const saved = await api.postCredential(app.id, key, options.env, envelope);
+      const saved = await api.postCredential(app.id, key, options.env, envelope, options.canary);
 
       console.log(`✅ Credencial "${saved.key || key}" cifrada para ${recipients.length} destinatario(s) y guardada.`);
       console.log('   El servidor almacenó solo texto cifrado — ni Koove puede leerla. 🔒');
+      if (options.canary) {
+        console.log('   🕯️ Señuelo activo: cualquier lectura dirigida de esta clave disparará una alerta de brecha.');
+      }
     } catch (error) {
       if (error.response?.status === 409) {
         const d = error.response.data;
