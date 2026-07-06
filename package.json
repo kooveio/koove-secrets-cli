@@ -10,7 +10,7 @@
     "test": "node test/engine.test.js"
   },
   "dependencies": {
-    "@koove/crypto": "github:kooveio/koove-crypto",
+    "@koove/crypto": "^0.1.0",
     "axios": "^1.9.0",
     "commander": "^11.1.0",
     "dotenv": "^16.5.0"
@@ -29,5 +29,8 @@
   ],
   "author": "Gus <admin@koove.io>",
   "license": "MIT",
-  "homepage": "https://github.com/kooveio/koove-secrets-cli#readme"
+  "homepage": "https://github.com/kooveio/koove-secrets-cli#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
