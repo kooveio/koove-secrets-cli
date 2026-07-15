@@ -32,6 +32,7 @@ const { createApi } = require('../lib/api');
 const { rewrapToExpected } = require('../lib/engine');
 const keyfile = require('../lib/keyfile');
 const { ask, askHidden, askPassphrase } = require('../lib/prompt');
+const { parseEnvFile } = require('../lib/envfile');
 
 // ----- Config ----- //
 const CONFIG_DIR = path.join(os.homedir(), '.koove-secrets');
@@ -262,6 +263,76 @@ program
             '   (¿cambió el recipient set a mitad? re-ejecuta el comando)',
         );
       }
+      fail(httpError(error));
+    }
+  });
+
+program
+  .command('import [file]')
+  .description('Importa un .env: cifra cada clave localmente y sube solo los envelopes (zero-knowledge)')
+  .option('--env <env>', 'Entorno (dev/prod/staging)', 'dev')
+  .option('--dry-run', 'muestra qué se importaría sin subir nada', false)
+  .action(async (file = '.env', options) => {
+    try {
+      const filePath = path.resolve(file);
+      if (!fs.existsSync(filePath)) {
+        fail(`No existe el archivo: ${filePath}`);
+      }
+      const { entries, skipped } = parseEnvFile(fs.readFileSync(filePath, 'utf8'));
+
+      for (const s of skipped) {
+        console.warn(`⚠️  Línea ${s.line} omitida: ${s.text}`);
+      }
+      if (entries.length === 0) {
+        fail('El archivo no contiene ninguna clave importable.');
+      }
+
+      console.log(`📄 ${entries.length} clave(s) en ${path.basename(filePath)} → entorno "${options.env}":`);
+      for (const e of entries) console.log(`   · ${e.key}`);
+
+      if (options.dryRun) {
+        console.log('🔎 Dry-run: no se ha subido nada.');
+        return;
+      }
+
+      const api = apiOrExit();
+      const app = await api.getApp();
+      // One discovery for the whole batch: every envelope wraps the same set.
+      const discovery = await api.getDiscovery(app.id);
+      const recipients = discovery.recipients;
+      if (!recipients || recipients.length === 0) {
+        fail(
+          'El recipient set de la app está vacío.\n' +
+            '   Ejecuta `app-init` (controller + recovery) y/o attesta un dispositivo primero.',
+        );
+      }
+
+      let ok = 0;
+      const failed = [];
+      for (const { key, value } of entries) {
+        try {
+          const envelope = encryptSecret(recipients, value);
+          await api.postCredential(app.id, key, options.env, envelope, false);
+          ok += 1;
+          console.log(`   ✅ ${key}`);
+        } catch (error) {
+          failed.push(key);
+          console.error(`   ❌ ${key}: ${httpError(error)}`);
+        }
+      }
+
+      console.log(
+        `\n🔐 Importadas ${ok}/${entries.length} clave(s), cifradas para ${recipients.length} destinatario(s).`,
+      );
+      if (failed.length > 0) {
+        fail(`Fallaron: ${failed.join(', ')} — re-ejecuta el comando (el upsert es idempotente).`);
+      }
+      console.log(
+        `\n⚠️  Recuerda: ${path.basename(filePath)} sigue EN CLARO en tu disco.\n` +
+          '   Cuando verifiques que tu app lee de Koove, bórralo y rota cualquier\n' +
+          '   valor que haya estado commiteado en el repo.',
+      );
+    } catch (error) {
       fail(httpError(error));
     }
   });

@@ -1,13 +1,13 @@
 {
   "name": "@koove/secrets-cli",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "CLI zero-knowledge de Koove: escritor de secretos + tooling controller (device lifecycle, recovery, rotación)",
   "bin": {
     "koove-secrets": "./bin/cli.js"
   },
   "scripts": {
     "start": "node ./bin/cli.js",
-    "test": "node test/engine.test.js"
+    "test": "node test/engine.test.js && node test/envfile.test.js"
   },
   "dependencies": {
     "@koove/crypto": "^0.1.0",
