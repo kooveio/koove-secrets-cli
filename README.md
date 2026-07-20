@@ -36,6 +36,9 @@ koove-secrets app-init
 # Store a secret — encrypted locally; only the envelope is uploaded.
 koove-secrets set DATABASE_URL "postgres://..." --env prod
 
+# Import a whole .env file in one command (each value encrypted locally).
+koove-secrets import .env --env prod     # --dry-run to preview without uploading
+
 # List secrets (metadata only — the writer can't read values back).
 koove-secrets list --env prod
 

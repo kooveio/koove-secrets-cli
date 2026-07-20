@@ -1,6 +1,6 @@
 {
   "name": "@koove/secrets-cli",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "CLI zero-knowledge de Koove: escritor de secretos + tooling controller (device lifecycle, recovery, rotación)",
   "bin": {
     "koove-secrets": "./bin/cli.js"
@@ -24,7 +24,11 @@
   },
   "keywords": [
     "secrets",
-    "vpn",
+    "zero-knowledge",
+    "encryption",
+    "dotenv",
+    "env",
+    "cli",
     "security"
   ],
   "author": "Gus <admin@koove.io>",
