@@ -1,17 +1,16 @@
 name: Publish to npm (OIDC trusted publishing)
 
 # Publishes @koove/secrets-cli on a GitHub Release. No npm token: npm trusts
-# this exact repo+workflow via OIDC (Trusted Publishing), and attaches a
-# provenance attestation. Configure the trusted publisher once at
-# npmjs.com -> package -> Settings -> Trusted Publisher.
+# this exact repo+workflow via OIDC (Trusted Publishing) and attaches a
+# provenance attestation. One-time setup: npmjs.com -> @koove/secrets-cli ->
+# Settings -> Trusted Publisher (repo kooveio/koove-secrets-cli, publish.yml).
 #
-# Release flow: bump version in package.json -> commit -> draft a GitHub
-# Release tagged vX.Y.Z -> Publish. This job runs and publishes that version.
+# Release flow: bump version -> commit -> draft a GitHub Release vX.Y.Z -> Publish.
 
 on:
   release:
     types: [published]
-  workflow_dispatch: # manual re-run if a release job needs retrying
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,7 +25,6 @@ jobs:
         with:
           node-version: '22'
           registry-url: 'https://registry.npmjs.org'
-      # Trusted publishing + provenance need a recent npm.
       - run: npm install -g npm@latest
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - run: npm publish --provenance --access public
